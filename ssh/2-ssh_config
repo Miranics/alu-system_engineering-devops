@@ -50,5 +50,5 @@ Host *
     SendEnv LANG LC_*
     HashKnownHosts yes
     GSSAPIAuthentication yes
-    IdentityFile ~/.ssh/holberton
+    IdentityFile ~/.ssh/school
     PasswordAuthentication no
