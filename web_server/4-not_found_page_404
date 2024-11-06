@@ -19,4 +19,4 @@ config_file=\
 }"
 sudo chown -R "$USER":"$USER" /etc/nginx/sites-available/default
 echo "$config_file" > /etc/nginx/sites-available/default
-sudo service nginx restart
+sudo service nginx restart 
