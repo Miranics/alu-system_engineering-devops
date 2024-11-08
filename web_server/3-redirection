@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
-# Configure nginx server redirecting to another page
-sudo apt-get update
-sudo apt-get -y install nginx
-newlines="\\\trewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;"
-sudo sed -i "53i $newlines" /etc/nginx/sites-available/default
-sudo service nginx restart
+# This script configures Nginx to redirect /redirect_me to another URL
+
+# Install nginx if not installed
+if ! command -v nginx &> /dev/null; then
+    apt-get update
+    apt-get install -y nginx
+fi
+
+# Add redirection to Nginx default server block
+REDIRECT_CONF="location /redirect_me {
+    return 301 http://example.com;
+}"
+
+# Insert the redirection in the server block
+sed -i '/server_name _;/a '"$REDIRECT_CONF" /etc/nginx/sites-available/default
+
+# Restart Nginx to apply changes
+nginx -s reload
