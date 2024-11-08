@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# This script configures Nginx to redirect /redirect_me to another URL
+# This script installs Nginx (if not installed), then configures a 301 redirect from /redirect_me
 
-# Install nginx if not installed
+# Install Nginx if it's not already installed
 if ! command -v nginx &> /dev/null; then
-    apt-get update
-    apt-get install -y nginx
+    sudo apt-get update
+    sudo apt-get install -y nginx
 fi
 
-# Add redirection to Nginx default server block
+# Add the 301 redirect to the Nginx configuration
 REDIRECT_CONF="location /redirect_me {
     return 301 http://example.com;
 }"
 
-# Insert the redirection in the server block
-sed -i '/server_name _;/a '"$REDIRECT_CONF" /etc/nginx/sites-available/default
+# Insert the redirection in the server block in the default Nginx config file
+sudo sed -i '/server_name _;/a '"$REDIRECT_CONF" /etc/nginx/sites-available/default
 
-# Restart Nginx to apply changes
-nginx -s reload
+# Reload Nginx to apply changes
+sudo nginx -s reload
