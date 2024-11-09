@@ -1,22 +1,44 @@
 #!/usr/bin/env bash
-# Script to configure HAProxy on lb-01 to load balance between web-01 and web-02
-
-# Install HAProxy
+# Update system and install HAproxy
 sudo apt update
 sudo apt install -y haproxy
 
-# Configure HAProxy
-sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOL
+# Configure HAproxy
+sudo tee /etc/haproxy/haproxy.cfg <<EOF
+# Global settings
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    maxconn 200
+
+# Default settings
+defaults
+    log     global
+    option  httplog
+    timeout connect 5000ms
+    timeout client  50000ms
+    timeout server  50000ms
+
+# Frontend for HTTP traffic
 frontend http_front
     bind *:80
-    default_backend http_back
+    default_backend web_servers
+    errorfile 404 /etc/haproxy/errors/404.http
 
-backend http_back
+# Backend for web servers
+backend web_servers
     balance roundrobin
-    server 6327-web-01 34.229.78.231:80 check
-    server 6327-web-02 3.91.78.42:80 check
-EOL
+    server web-01 34.229.78.231:80 check
+    server web-02 3.91.78.42:80 check
+EOF
 
-# Restart HAProxy service
-sudo systemctl restart haproxy
-sudo systemctl enable haproxy
+# Create custom 404 error page
+sudo mkdir -p /etc/haproxy/errors
+echo "HTTP/1.0 404 Not Found" | sudo tee /etc/haproxy/errors/404.http
+echo "Content-Type: text/plain" | sudo tee -a /etc/haproxy/errors/404.http
+echo "Content-Length: 27" | sudo tee -a /etc/haproxy/errors/404.http
+echo "" | sudo tee -a /etc/haproxy/errors/404.http
+echo "Custom 404 Not Found Error" | sudo tee -a /etc/haproxy/errors/404.http
+
+# Restart HAproxy to apply changes
+sudo service haproxy restart
