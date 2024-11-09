@@ -14,8 +14,8 @@ frontend Local_Server
 backend Web_Servers
         balance roundrobin
         mode http
-        server web-34.229.78.231 check
-        server web-3.91.78.42 check
+        server web-01 34.229.78.231 check
+        server web-02 3.91.78.42 check
 EOF
 
 sudo service haproxy restart
