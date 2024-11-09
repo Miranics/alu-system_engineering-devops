@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
-# Install and configure HAproxy on my lb-O1 server
+# Script to configure HAProxy on lb-01 to load balance between web-01 and web-02
 
-sudo apt-get -y install --no-install-recommends software-properties-common
-sudo add-apt-repository -y ppa:vbernat/haproxy-2.0
-sudo apt-get -y update
-sudo apt-get -y install haproxy=2.0.\*
+# Install HAProxy
+sudo apt update
+sudo apt install -y haproxy
 
-cat >> /etc/haproxy/haproxy.cfg << EOF
-frontend Local_Server
-        bind *:80
-        mode http
-        default_backend Web_Servers
-backend Web_Servers
-        balance roundrobin
-        mode http
-        server web-01 34.229.78.231 check
-        server web-02 3.91.78.42 check
-EOF
+# Configure HAProxy
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOL
+frontend http_front
+    bind *:80
+    default_backend http_back
 
-sudo service haproxy restart
+backend http_back
+    balance roundrobin
+    server 6327-web-01 34.229.78.231:80 check
+    server 6327-web-02 3.91.78.42:80 check
+EOL
+
+# Restart HAProxy service
+sudo systemctl restart haproxy
+sudo systemctl enable haproxy
