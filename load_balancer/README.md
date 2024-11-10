@@ -1,4 +1,4 @@
-    # LOAD BALANCER
+# LOAD BALANCER
 ![alt text](image.png)
 
      Background Context
