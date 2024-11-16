@@ -1,0 +1,22 @@
+#!/bin/bash
+# Install UFW
+sudo apt update && sudo apt install ufw -y
+
+# Reset UFW rules
+sudo ufw reset
+
+# Allow SSH
+sudo ufw allow 22/tcp
+
+# Allow HTTP
+sudo ufw allow 80/tcp
+
+# Allow HTTPS
+sudo ufw allow 443/tcp
+
+# Enable UFW
+sudo ufw enable
+
+# Display the status
+sudo ufw status verbose
+
